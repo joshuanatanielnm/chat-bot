@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Chatbot with Mistral
+
+A modern, responsive AI chatbot built with Next.js and powered by Mistral AI. This application provides a sleek chat interface for interacting with the Mistral AI model.
+
+![Chatbot Screenshot](screenshot.png)
+
+## Features
+
+- 🤖 Powered by Mistral AI's open-mistral-7b model
+- 💬 Real-time chat interface with streaming responses
+- 🌓 Dark mode support
+- 📱 Responsive design that works on all devices
+- ⚡ Built with Next.js for optimal performance
+- 🎨 Modern UI with smooth animations
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- Node.js (v18 or higher)
+- npm or yarn
+- A Mistral AI API key
 
 ## Getting Started
 
-First, run the development server:
+1. Clone the repository:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+   ```bash
+   git clone https://github.com/yourusername/my-ai-app.git
+   cd my-ai-app
+   ```
+
+2. Install dependencies:
+
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. Create a `.env.local` file in the root directory and add your Mistral API key:
+
+   ```
+   MISTRAL_API_KEY=your_api_key_here
+   ```
+
+4. Start the development server:
+
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+5. Open [http://localhost:3000](http://localhost:3000) in your browser to see the application.
+
+## Environment Variables
+
+| Variable          | Description             |
+| ----------------- | ----------------------- |
+| `MISTRAL_API_KEY` | Your Mistral AI API key |
+
+## Technologies Used
+
+- [Next.js](https://nextjs.org/) - React framework for production
+- [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
+- [Mistral AI](https://mistral.ai/) - AI model provider
+- [AI SDK](https://sdk.vercel.ai/docs) - Vercel's AI SDK for building AI applications
+
+## Project Structure
+
+```
+my-ai-app/
+├── app/
+│   ├── api/
+│   │   └── chat/
+│   │       └── route.ts       # API route for chat
+│   │   └── globals.css            # Global styles
+│   │   └── layout.tsx             # Root layout component
+│   └── page.tsx               # Main chat interface
+├── public/                    # Static assets
+├── .env.local                 # Environment variables (not in repo)
+├── next.config.ts             # Next.js configuration
+├── package.json               # Project dependencies
+└── README.md                  # Project documentation
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Customization
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Changing the AI Model
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To use a different Mistral model, modify the model name in `app/api/chat/route.ts`:
 
-## Learn More
+```typescript
+const result = streamText({
+  model: mistral("your-preferred-model"),
+  messages,
+});
+```
 
-To learn more about Next.js, take a look at the following resources:
+### Styling
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+The application uses Tailwind CSS for styling. You can customize the appearance by modifying the classes in `app/page.tsx` and `app/globals.css`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+This application can be easily deployed to Vercel:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. Push your code to a GitHub repository
+2. Import the project in Vercel
+3. Add your environment variables
+4. Deploy
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgements
+
+- [Mistral AI](https://mistral.ai/) for providing the AI model
+- [Vercel](https://vercel.com/) for hosting and the AI SDK
+- [Next.js](https://nextjs.org/) team for the amazing framework
