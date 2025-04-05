@@ -45,7 +45,7 @@ export default function Chat() {
                       return (
                         <div
                           key={`${message.id}-${i}`}
-                          className="whitespace-pre-wrap"
+                          className="whitespace-pre-wrap break-words overflow-wrap-anywhere"
                         >
                           {part.text}
                         </div>
