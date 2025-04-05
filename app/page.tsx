@@ -6,6 +6,9 @@ export default function Chat() {
   const { messages, input, handleInputChange, handleSubmit } = useChat();
   return (
     <div className="flex flex-col w-full max-w-2xl mx-auto h-screen bg-white dark:bg-zinc-900">
+      <h3 className="text-2xl font-bold text-center py-4">
+        Simple Chatbot with Mistral
+      </h3>
       <div className="flex-1 overflow-y-auto px-4 py-8 space-y-4">
         {messages.map((message) => (
           <div
