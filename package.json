@@ -14,6 +14,7 @@
     "@ai-sdk/react": "^1.2.5",
     "@mistralai/mistralai": "^1.5.2",
     "ai": "^4.3.0",
+    "lucide-react": "^0.487.0",
     "next": "15.2.4",
     "ollama": "^0.5.14",
     "ollama-ai-provider": "^1.2.0",
