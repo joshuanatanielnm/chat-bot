@@ -2,7 +2,8 @@
 
 A modern, responsive AI chatbot built with Next.js and powered by Mistral AI. This application provides a sleek chat interface for interacting with the Mistral AI model.
 
-![Chatbot Screenshot](screenshot.png)
+<img width="1512" alt="image" src="https://github.com/user-attachments/assets/581ecad1-47c8-4a9f-9a15-99ed0049c217" />
+
 
 ## Features
 
