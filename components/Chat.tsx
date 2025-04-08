@@ -1,6 +1,6 @@
 import { useConversations } from "@/hooks/useConversations";
 import { Message, useChat } from "@ai-sdk/react";
-import { useEffect } from "react";
+import { useEffect, useRef, useLayoutEffect } from "react";
 
 interface ChatProps {
   conversationId: string;
@@ -10,6 +10,7 @@ interface ChatProps {
 // Separate Chat that will be unmounted and remounted when conversation changes
 export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
   const { conversations, updateConversation } = useConversations();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Find the current conversation
   const conversation = conversations.find((conv) => conv.id === conversationId);
@@ -28,6 +29,24 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
       onMessageChange(messages);
     }
   }, [conversationId, messages, updateConversation, onMessageChange]);
+
+  // Focus input when conversation changes - use both useEffect and useLayoutEffect for maximum reliability
+  useEffect(() => {
+    const focusTimeout = setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 50); // Small delay to ensure DOM is ready
+
+    return () => clearTimeout(focusTimeout);
+  }, [conversationId]);
+
+  // Also use useLayoutEffect for more immediate focus
+  useLayoutEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [conversationId]);
 
   return (
     <>
@@ -82,10 +101,12 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
       <div className="border-t border-[var(--border)] p-4">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
+            ref={inputRef}
             className="flex-1 rounded-full border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] px-4 py-2 text-sm lg:text-base focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all"
             value={input}
             placeholder="Type your message..."
             onChange={handleInputChange}
+            autoFocus
           />
           <button
             type="submit"
