@@ -47,7 +47,7 @@ export default function Home() {
       {/* Mobile Menu Button */}
       <button
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="lg:hidden fixed bottom-6 right-6 z-50 p-3 rounded-full bg-[var(--accent)] text-white shadow-lg hover:opacity-90 transition-colors"
+        className="lg:hidden fixed bottom-20 right-6 z-50 p-3 rounded-full bg-[var(--accent)] text-white shadow-lg hover:opacity-90 transition-colors"
         aria-label="Toggle menu"
       >
         {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
@@ -65,6 +65,9 @@ export default function Home() {
         >
           New Chat
         </button>
+        <div className="block lg:hidden pb-4">
+          <ThemeSwitcher />
+        </div>
         <div className="flex-1 overflow-y-auto space-y-2">
           {conversations.map((conv) => (
             <div
