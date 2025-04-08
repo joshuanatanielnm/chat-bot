@@ -27,6 +27,16 @@ export default function Home() {
     const newConversation = createNewConversation();
     setCurrentConversationId(newConversation.id);
     setIsSidebarOpen(false);
+
+    // Force focus by using a small timeout
+    setTimeout(() => {
+      const inputField = document.querySelector(
+        'input[type="text"], input:not([type])'
+      );
+      if (inputField) {
+        (inputField as HTMLInputElement).focus();
+      }
+    }, 100);
   }, [createNewConversation, setCurrentConversationId]);
 
   // Handle messages change
@@ -38,6 +48,25 @@ export default function Home() {
   const handleCreateConversation = useCallback(
     (id: string) => {
       setCurrentConversationId(id);
+    },
+    [setCurrentConversationId]
+  );
+
+  // Handle selecting conversation
+  const handleSelectConversation = useCallback(
+    (id: string) => {
+      setCurrentConversationId(id);
+      setIsSidebarOpen(false);
+
+      // Force focus by using a small timeout
+      setTimeout(() => {
+        const inputField = document.querySelector(
+          'input[type="text"], input:not([type])'
+        );
+        if (inputField) {
+          (inputField as HTMLInputElement).focus();
+        }
+      }, 100);
     },
     [setCurrentConversationId]
   );
@@ -78,8 +107,7 @@ export default function Home() {
                   : "hover:bg-[var(--background-secondary)]"
               }`}
               onClick={() => {
-                setCurrentConversationId(conv.id);
-                setIsSidebarOpen(false);
+                handleSelectConversation(conv.id);
               }}
             >
               <div className="flex justify-between items-center">
@@ -120,13 +148,13 @@ export default function Home() {
         {/* Render the appropriate chat component based on current state */}
         {currentConversationId ? (
           <Chat
-            key={currentConversationId}
+            key={`chat-${currentConversationId}`}
             conversationId={currentConversationId}
             onMessageChange={handleMessagesChange}
           />
         ) : (
           <NewChat
-            key="new-chat"
+            key={`new-chat-${Date.now()}`}
             onCreateConversation={handleCreateConversation}
           />
         )}

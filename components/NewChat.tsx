@@ -1,6 +1,6 @@
 import { useConversations } from "@/hooks/useConversations";
 import { useChat } from "@ai-sdk/react";
-import { useCallback } from "react";
+import { useCallback, useRef, useEffect, useLayoutEffect } from "react";
 
 interface NewChatProps {
   onCreateConversation: (id: string) => void;
@@ -9,6 +9,7 @@ interface NewChatProps {
 // Empty chat for new conversations
 export const NewChat = ({ onCreateConversation }: NewChatProps) => {
   const { createNewConversation } = useConversations();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const {
     input,
@@ -32,6 +33,24 @@ export const NewChat = ({ onCreateConversation }: NewChatProps) => {
     [input, createNewConversation, originalSubmit, onCreateConversation]
   );
 
+  // Focus input when component mounts - use both useEffect and useLayoutEffect for maximum reliability
+  useEffect(() => {
+    const focusTimeout = setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }, 50); // Small delay to ensure DOM is ready
+
+    return () => clearTimeout(focusTimeout);
+  }, []);
+
+  // Also use useLayoutEffect for more immediate focus
+  useLayoutEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
+
   return (
     <>
       <div className="flex-1 overflow-y-auto px-4 py-8 space-y-4">
@@ -52,10 +71,12 @@ export const NewChat = ({ onCreateConversation }: NewChatProps) => {
       <div className="border-t border-[var(--border)] p-4">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
+            ref={inputRef}
             className="flex-1 rounded-full border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] px-4 py-2 text-sm lg:text-base focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all"
             value={input}
             placeholder="Type your message..."
             onChange={handleInputChange}
+            autoFocus
           />
           <button
             type="submit"
