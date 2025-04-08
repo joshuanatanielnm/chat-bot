@@ -1,8 +1,49 @@
 @import "tailwindcss";
 
-:root {
+:root,
+html[data-theme="light"] {
   --background: #ffffff;
+  --background-secondary: #f5f5f5;
   --foreground: #171717;
+  --accent: #0070f3;
+  --accent-hover: #e0e7ff;
+  --border: #e5e5e5;
+  --card: #ffffff;
+  --card-foreground: #171717;
+}
+
+html[data-theme="dark"] {
+  --background: #0a0a0a;
+  --background-secondary: #171717;
+  --foreground: #ededed;
+  --accent: #4f46e5;
+  --accent-hover: rgba(79, 70, 229, 0.1);
+  --border: #333333;
+  --card: #171717;
+  --card-foreground: #ededed;
+}
+
+html[data-theme="ghibli"] {
+  --background: #d8e3e7;
+  --background-secondary: #c2d3da;
+  --foreground: #2c3e50;
+  --accent: #5885af;
+  --accent-hover: rgba(88, 133, 175, 0.2);
+  --border: #b0c4de;
+  --card: #eaf4f4;
+  --card-foreground: #2c3e50;
+}
+
+/* Add transition for smooth theme switching */
+html {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body,
+button,
+input {
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease;
 }
 
 @theme inline {
@@ -13,9 +54,15 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme]) {
     --background: #0a0a0a;
+    --background-secondary: #171717;
     --foreground: #ededed;
+    --accent: #4f46e5;
+    --accent-hover: rgba(79, 70, 229, 0.1);
+    --border: #333333;
+    --card: #171717;
+    --card-foreground: #ededed;
   }
 }
 
