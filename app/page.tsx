@@ -114,15 +114,17 @@ export default function Home() {
                 <span className="truncate text-sm">
                   {conv.title || "New Conversation"}
                 </span>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    deleteConversation(conv.id);
-                  }}
-                  className="text-gray-500 hover:text-red-500"
-                >
-                  ×
-                </button>
+                {conversations.length > 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteConversation(conv.id);
+                    }}
+                    className="text-gray-500 hover:text-red-500"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
               <div className="text-xs text-gray-500">
                 {new Date(conv.updatedAt).toLocaleDateString()}
