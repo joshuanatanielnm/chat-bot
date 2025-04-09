@@ -1,7 +1,22 @@
 {
-  "name": "my-ai-app",
-  "version": "0.1.0",
+  "name": "mistral-chat-assistant",
+  "version": "1.0.0",
   "private": true,
+  "description": "A modern, responsive AI chatbot powered by Mistral AI",
+  "author": "Your Name",
+  "license": "MIT",
+  "homepage": "https://mistral-chat-bot.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/mistral-chat-assistant"
+  },
+  "keywords": [
+    "ai",
+    "chatbot",
+    "mistral",
+    "next.js",
+    "react"
+  ],
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",

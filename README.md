@@ -1,18 +1,18 @@
-# AI Chatbot with Mistral
+# Mistral AI Chat Assistant
 
-A modern, responsive AI chatbot built with Next.js and powered by Mistral AI. This application provides a sleek chat interface for interacting with the Mistral AI model.
+A modern, responsive AI chatbot built with Next.js and powered by Mistral AI. This application provides a sleek chat interface for interacting with the Mistral AI model, allowing users to have natural conversations with state-of-the-art AI technology.
 
-<img width="1512" alt="image" src="https://github.com/user-attachments/assets/581ecad1-47c8-4a9f-9a15-99ed0049c217" />
-
+<img width="1512" alt="Mistral AI Chat Assistant Screenshot" src="https://github.com/user-attachments/assets/581ecad1-47c8-4a9f-9a15-99ed0049c217" />
 
 ## Features
 
-- 🤖 Powered by Mistral AI's open-mistral-7b model
+- 🤖 Powered by Mistral AI's advanced language models
 - 💬 Real-time chat interface with streaming responses
-- 🌓 Dark mode support
-- 📱 Responsive design that works on all devices
-- ⚡ Built with Next.js for optimal performance
-- 🎨 Modern UI with smooth animations
+- 📱 Responsive design that works on mobile, tablet, and desktop
+- 🌓 Dark and light mode support
+- 💾 Conversation history saved in localStorage
+- ⚡ Built with Next.js for optimal performance and SEO
+- 🎨 Modern UI with smooth animations and transitions
 
 ## Prerequisites
 
