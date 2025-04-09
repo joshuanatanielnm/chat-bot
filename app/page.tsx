@@ -105,13 +105,10 @@ export default function Home() {
       >
         <button
           onClick={handleNewChat}
-          className="w-full mb-4 px-4 py-2 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 transition-colors"
+          className="w-full lg:block hidden mb-4 px-4 py-2 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 transition-colors"
         >
           New Chat
         </button>
-        <div className="block lg:hidden pb-4">
-          <ThemeSwitcher />
-        </div>
         <div className="flex-1 overflow-y-auto space-y-2">
           {conversations
             .slice() // Create a copy to avoid mutating the original array
@@ -154,6 +151,15 @@ export default function Home() {
               </div>
             ))}
         </div>
+        <div className="block lg:hidden pb-4">
+          <ThemeSwitcher />
+        </div>
+        <button
+          onClick={handleNewChat}
+          className="block lg:hidden w-full mb-4 px-4 py-2 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 transition-colors"
+        >
+          New Chat
+        </button>
       </div>
 
       {/* Main Chat Area */}
