@@ -113,39 +113,46 @@ export default function Home() {
           <ThemeSwitcher />
         </div>
         <div className="flex-1 overflow-y-auto space-y-2">
-          {conversations.map((conv) => (
-            <div
-              key={conv.id}
-              className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                currentConversationId === conv.id
-                  ? "bg-[var(--accent-hover)]"
-                  : "hover:bg-[var(--background-secondary)]"
-              }`}
-              onClick={() => {
-                handleSelectConversation(conv.id);
-              }}
-            >
-              <div className="flex justify-between items-center">
-                <span className="truncate text-sm">
-                  {conv.title || "New Conversation"}
-                </span>
-                {conversations.length > 1 && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteConversation(conv.id);
-                    }}
-                    className="text-gray-500 hover:text-red-500"
-                  >
-                    ×
-                  </button>
-                )}
+          {conversations
+            .slice() // Create a copy to avoid mutating the original array
+            .sort(
+              (a, b) =>
+                new Date(b.updatedAt).getTime() -
+                new Date(a.updatedAt).getTime()
+            ) // Sort by updatedAt descending (newest first)
+            .map((conv) => (
+              <div
+                key={conv.id}
+                className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                  currentConversationId === conv.id
+                    ? "bg-[var(--accent-hover)]"
+                    : "hover:bg-[var(--background-secondary)]"
+                }`}
+                onClick={() => {
+                  handleSelectConversation(conv.id);
+                }}
+              >
+                <div className="flex justify-between items-center">
+                  <span className="truncate text-sm">
+                    {conv.title || "New Conversation"}
+                  </span>
+                  {conversations.length > 1 && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteConversation(conv.id);
+                      }}
+                      className="text-gray-500 hover:text-red-500"
+                    >
+                      ×
+                    </button>
+                  )}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {new Date(conv.updatedAt).toLocaleDateString()}
+                </div>
               </div>
-              <div className="text-xs text-gray-500">
-                {new Date(conv.updatedAt).toLocaleDateString()}
-              </div>
-            </div>
-          ))}
+            ))}
         </div>
       </div>
 
