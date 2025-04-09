@@ -3,7 +3,7 @@
 import { useConversations } from "@/hooks/useConversations";
 import { Message } from "@ai-sdk/react";
 import { Menu, X } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ThemeSwitcher } from "../components/ThemeSwitcher";
 import { NewChat } from "@/components/NewChat";
 import { Chat } from "@/components/Chat";
@@ -21,6 +21,17 @@ export default function Home() {
     createNewConversation,
     deleteConversation,
   } = useConversations();
+
+  useEffect(() => {
+    // Only create a new conversation if we've loaded from localStorage
+    // and still have no conversations
+    if (
+      conversations.length === 0 &&
+      localStorage.getItem("conversations") === null
+    ) {
+      createNewConversation();
+    }
+  }, [conversations, createNewConversation]);
 
   // Handle creating a new chat
   const handleNewChat = useCallback(() => {
