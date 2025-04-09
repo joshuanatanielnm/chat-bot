@@ -9,33 +9,83 @@ export interface Conversation {
   updatedAt: string;
 }
 
+// Safe localStorage access helper functions
+const getLocalStorage = (key: string): string | null => {
+  try {
+    if (typeof window !== "undefined") {
+      return window.localStorage.getItem(key);
+    }
+  } catch (error) {
+    console.error(`Error reading from localStorage: ${error}`);
+  }
+  return null;
+};
+
+const setLocalStorage = (key: string, value: string): boolean => {
+  try {
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(key, value);
+      return true;
+    }
+  } catch (error) {
+    console.error(`Error writing to localStorage: ${error}`);
+  }
+  return false;
+};
+
 export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<
     string | null
   >(null);
-  const [isConversationsEmpty, setIsConversationsEmpty] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Load conversations from localStorage on mount
   useEffect(() => {
-    const savedConversations = localStorage.getItem("conversations");
-    if (savedConversations) {
-      const parsed = JSON.parse(savedConversations);
-      setConversations(parsed);
-      setIsConversationsEmpty(parsed.length === 0);
-      // Set the most recent conversation as current if none is selected
-      if (parsed.length > 0 && !currentConversationId) {
-        setCurrentConversationId(parsed[0].id);
+    // Use a flag to ensure we only run this once in client-side rendering
+    let isMounted = true;
+
+    // Delay slightly to ensure this runs after hydration
+    const loadFromStorage = () => {
+      if (!isMounted) return;
+
+      const savedConversations = getLocalStorage("conversations");
+      if (savedConversations) {
+        try {
+          const parsed = JSON.parse(savedConversations);
+          if (Array.isArray(parsed)) {
+            setConversations(parsed);
+
+            // Set the most recent conversation as current if none is selected
+            if (parsed.length > 0 && !currentConversationId) {
+              setCurrentConversationId(parsed[0].id);
+            }
+          }
+        } catch (error) {
+          console.error("Failed to parse conversations:", error);
+        }
       }
+
+      if (isMounted) {
+        setIsInitialized(true);
+      }
+    };
+
+    // Delay the localStorage access to ensure it happens after hydration
+    if (typeof window !== "undefined") {
+      // Use setTimeout to ensure this runs after React hydration
+      setTimeout(loadFromStorage, 0);
     }
-    setIsInitialized(true);
-  }, []); // Remove currentConversationId from dependencies
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Save conversations to localStorage whenever they change
   useEffect(() => {
-    if (isInitialized) {
-      localStorage.setItem("conversations", JSON.stringify(conversations));
+    if (isInitialized && conversations.length > 0) {
+      setLocalStorage("conversations", JSON.stringify(conversations));
     }
   }, [conversations, isInitialized]);
 
@@ -43,7 +93,7 @@ export function useConversations() {
     const newConversation: Conversation = {
       id: Date.now().toString(),
       title: "New Conversation",
-      messages: [], // Ensure messages are empty
+      messages: [],
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -88,7 +138,7 @@ export function useConversations() {
   return {
     conversations,
     currentConversationId,
-    isConversationsEmpty,
+    isConversationsEmpty: conversations.length === 0,
     setCurrentConversationId,
     createNewConversation,
     updateConversation,

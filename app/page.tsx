@@ -17,7 +17,6 @@ export default function Home() {
   const {
     conversations,
     currentConversationId,
-    isConversationsEmpty,
     setCurrentConversationId,
     createNewConversation,
     deleteConversation,
@@ -25,10 +24,18 @@ export default function Home() {
 
   // Create a new conversation if there are none
   useEffect(() => {
-    if (isConversationsEmpty) {
-      createNewConversation();
-    }
-  }, [isConversationsEmpty, createNewConversation]);
+    // Skip during server-side rendering
+    if (typeof window === "undefined") return;
+
+    // Use a timeout to ensure this runs after localStorage is loaded
+    const timer = setTimeout(() => {
+      if (conversations.length === 0) {
+        createNewConversation();
+      }
+    }, 100); // Small delay to ensure localStorage has been processed
+
+    return () => clearTimeout(timer);
+  }, [conversations.length, createNewConversation]);
 
   // Handle creating a new chat
   const handleNewChat = useCallback(() => {
