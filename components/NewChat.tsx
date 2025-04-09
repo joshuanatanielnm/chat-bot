@@ -1,6 +1,13 @@
 import { useConversations } from "@/hooks/useConversations";
 import { useChat } from "@ai-sdk/react";
-import { useCallback, useRef, useEffect, useLayoutEffect } from "react";
+import {
+  useCallback,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from "react";
+import { Loader2 } from "lucide-react";
 
 interface NewChatProps {
   onCreateConversation: (id: string) => void;
@@ -10,11 +17,13 @@ interface NewChatProps {
 export const NewChat = ({ onCreateConversation }: NewChatProps) => {
   const { createNewConversation } = useConversations();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     input,
     handleInputChange,
     handleSubmit: originalSubmit,
+    isLoading,
   } = useChat({
     id: "new-chat-temp",
     initialMessages: [],
@@ -25,8 +34,14 @@ export const NewChat = ({ onCreateConversation }: NewChatProps) => {
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (input.trim()) {
-        const newConversation = createNewConversation();
-        onCreateConversation(newConversation.id);
+        setIsSubmitting(true);
+        try {
+          const newConversation = createNewConversation();
+          onCreateConversation(newConversation.id);
+        } catch (error) {
+          console.error("Error creating new conversation:", error);
+          setIsSubmitting(false);
+        }
       }
       originalSubmit(e);
     },
@@ -50,6 +65,9 @@ export const NewChat = ({ onCreateConversation }: NewChatProps) => {
       inputRef.current.focus();
     }
   }, []);
+
+  // Determine if loading
+  const loading = isLoading || isSubmitting;
 
   return (
     <>
@@ -76,13 +94,17 @@ export const NewChat = ({ onCreateConversation }: NewChatProps) => {
             value={input}
             placeholder="Type your message..."
             onChange={handleInputChange}
+            disabled={loading}
             autoFocus
           />
           <button
             type="submit"
-            className="rounded-full bg-[var(--accent)] text-white px-4 lg:px-6 py-2 text-sm lg:text-base hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2 transition-all"
+            className={`rounded-full bg-[var(--accent)] text-white px-4 lg:px-6 py-2 text-sm lg:text-base hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2 transition-all ${
+              loading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
+            disabled={loading || !input.trim()}
           >
-            Send
+            {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send"}
           </button>
         </form>
       </div>

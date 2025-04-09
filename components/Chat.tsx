@@ -1,6 +1,7 @@
 import { useConversations } from "@/hooks/useConversations";
 import { Message, useChat } from "@ai-sdk/react";
 import { useEffect, useRef, useLayoutEffect } from "react";
+import { Loader2 } from "lucide-react";
 
 interface ChatProps {
   conversationId: string;
@@ -16,11 +17,12 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
   const conversation = conversations.find((conv) => conv.id === conversationId);
 
   // Initialize chat with the conversation's messages
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
-    id: conversationId,
-    initialMessages: conversation?.messages || [],
-    api: "/api/chat",
-  });
+  const { messages, input, handleInputChange, handleSubmit, isLoading } =
+    useChat({
+      id: conversationId,
+      initialMessages: conversation?.messages || [],
+      api: "/api/chat",
+    });
 
   // Update conversation in storage when messages change
   useEffect(() => {
@@ -65,36 +67,50 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
             </div>
           </div>
         ) : (
-          messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex ${
-                message.role === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
+          <>
+            {messages.map((message) => (
               <div
-                className={`max-w-[90%] lg:max-w-[80%] rounded-2xl px-3 lg:px-4 py-2 ${
-                  message.role === "user"
-                    ? "bg-[var(--accent)] text-white rounded-br-none"
-                    : "bg-[var(--card)] text-[var(--card-foreground)] rounded-bl-none"
-                } animate-fade-in`}
+                key={message.id}
+                className={`flex ${
+                  message.role === "user" ? "justify-end" : "justify-start"
+                }`}
               >
-                {message.parts.map((part, i) => {
-                  switch (part.type) {
-                    case "text":
-                      return (
-                        <div
-                          key={`${message.id}-${i}`}
-                          className="whitespace-pre-wrap break-words overflow-wrap-anywhere text-sm lg:text-base"
-                        >
-                          {part.text}
-                        </div>
-                      );
-                  }
-                })}
+                <div
+                  className={`max-w-[90%] lg:max-w-[80%] rounded-2xl px-3 lg:px-4 py-2 ${
+                    message.role === "user"
+                      ? "bg-[var(--accent)] text-white rounded-br-none"
+                      : "bg-[var(--card)] text-[var(--card-foreground)] rounded-bl-none"
+                  } animate-fade-in`}
+                >
+                  {message.parts.map((part, i) => {
+                    switch (part.type) {
+                      case "text":
+                        return (
+                          <div
+                            key={`${message.id}-${i}`}
+                            className="whitespace-pre-wrap break-words overflow-wrap-anywhere text-sm lg:text-base"
+                          >
+                            {part.text}
+                          </div>
+                        );
+                    }
+                  })}
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+
+            {/* Loading indicator */}
+            {isLoading && (
+              <div className="flex justify-start">
+                <div className="max-w-[90%] lg:max-w-[80%] rounded-2xl px-3 lg:px-4 py-2 bg-[var(--card)] text-[var(--card-foreground)] rounded-bl-none animate-fade-in">
+                  <div className="flex items-center space-x-2">
+                    <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
+                    <span className="text-sm text-gray-500">Thinking...</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 
@@ -106,13 +122,17 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
             value={input}
             placeholder="Type your message..."
             onChange={handleInputChange}
+            disabled={isLoading}
             autoFocus
           />
           <button
             type="submit"
-            className="rounded-full bg-[var(--accent)] text-white px-4 lg:px-6 py-2 text-sm lg:text-base hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2 transition-all"
+            className={`rounded-full bg-[var(--accent)] text-white px-4 lg:px-6 py-2 text-sm lg:text-base hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2 transition-all ${
+              isLoading ? "opacity-70 cursor-not-allowed" : ""
+            }`}
+            disabled={isLoading || !input.trim()}
           >
-            Send
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send"}
           </button>
         </form>
       </div>
