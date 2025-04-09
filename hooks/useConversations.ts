@@ -14,6 +14,7 @@ export function useConversations() {
   const [currentConversationId, setCurrentConversationId] = useState<
     string | null
   >(null);
+  const [isConversationsEmpty, setIsConversationsEmpty] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
   // Load conversations from localStorage on mount
@@ -22,6 +23,7 @@ export function useConversations() {
     if (savedConversations) {
       const parsed = JSON.parse(savedConversations);
       setConversations(parsed);
+      setIsConversationsEmpty(parsed.length === 0);
       // Set the most recent conversation as current if none is selected
       if (parsed.length > 0 && !currentConversationId) {
         setCurrentConversationId(parsed[0].id);
@@ -86,6 +88,7 @@ export function useConversations() {
   return {
     conversations,
     currentConversationId,
+    isConversationsEmpty,
     setCurrentConversationId,
     createNewConversation,
     updateConversation,
