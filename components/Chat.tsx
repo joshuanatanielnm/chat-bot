@@ -61,8 +61,8 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
                 Welcome to the Chat!
               </h2>
               <p className="text-sm lg:text-base text-gray-500">
-                I&apos;m your AI assistant powered by Mistral. Feel free to ask
-                me anything!
+                I&apos;m your AI assistant powered by Cognitica. Feel free to
+                ask me anything!
               </p>
             </div>
           </div>

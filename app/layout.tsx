@@ -14,12 +14,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Mistral AI Chat Assistant",
+  title: "Cognitica AI Chat Assistant",
   description:
-    "A modern, responsive AI chatbot powered by Mistral AI. Chat with your AI assistant for instant answers, creative writing, and more.",
+    "A modern, responsive AI chatbot. Chat with your AI assistant for instant answers, creative writing, and more.",
   keywords: [
     "AI chatbot",
-    "Mistral AI",
+    "Cognitica AI",
     "chat assistant",
     "AI",
     "machine learning",
@@ -39,22 +39,22 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "/",
-    title: "Mistral AI Chat Assistant",
-    description: "A modern, responsive AI chatbot powered by Mistral AI",
-    siteName: "Mistral AI Chat",
+    title: "Cognitica AI Chat Assistant",
+    description: "A modern, responsive AI",
+    siteName: "Cognitica AI Chat",
     images: [
       {
         url: "/vercel.svg",
         width: 1200,
         height: 630,
-        alt: "Mistral AI Chat Assistant",
+        alt: "Cognitica AI Chat Assistant",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mistral AI Chat Assistant",
-    description: "A modern, responsive AI chatbot powered by Mistral AI",
+    title: "Cognitica AI Chat Assistant",
+    description: "A modern, responsive AI chatbot powered by Cognitica AI",
     images: ["/vercel.svg"],
   },
   viewport: {

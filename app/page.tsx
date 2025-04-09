@@ -160,7 +160,7 @@ export default function Home() {
       <div className="flex-1 flex flex-col w-full lg:w-auto">
         <div className="flex justify-between items-center py-4 px-4 border-b border-[var(--border)]">
           <h3 className="text-xl lg:text-2xl font-bold">
-            Mistral AI Chat Assistant
+            Cognitica AI Chat Assistant
           </h3>
 
           {/* Desktop Theme Switcher */}
