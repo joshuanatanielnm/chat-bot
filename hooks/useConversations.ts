@@ -54,11 +54,18 @@ export function useConversations() {
         try {
           const parsed = JSON.parse(savedConversations);
           if (Array.isArray(parsed)) {
-            setConversations(parsed);
+            // Sort conversations by updatedAt timestamp (newest first)
+            const sortedConversations = parsed.sort(
+              (a, b) =>
+                new Date(b.updatedAt).getTime() -
+                new Date(a.updatedAt).getTime()
+            );
+
+            setConversations(sortedConversations);
 
             // Set the most recent conversation as current if none is selected
-            if (parsed.length > 0 && !currentConversationId) {
-              setCurrentConversationId(parsed[0].id);
+            if (sortedConversations.length > 0 && !currentConversationId) {
+              setCurrentConversationId(sortedConversations[0].id);
             }
           }
         } catch (error) {
@@ -97,7 +104,8 @@ export function useConversations() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    setConversations((prev) => [...prev, newConversation]);
+    // Add new conversation to the beginning of the array so it appears at the top
+    setConversations((prev) => [newConversation, ...prev]);
     setCurrentConversationId(newConversation.id);
     return newConversation;
   }, []);
