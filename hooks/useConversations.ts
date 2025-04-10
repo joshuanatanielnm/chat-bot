@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { UIMessage } from "ai";
+import { getStorageJSON, setStorageJSON } from "@/utils/storage";
 
 export interface Conversation {
   id: string;
@@ -9,91 +10,93 @@ export interface Conversation {
   updatedAt: string;
 }
 
-// Safe localStorage access helper functions
-const getLocalStorage = (key: string): string | null => {
-  try {
-    if (typeof window !== "undefined") {
-      return window.localStorage.getItem(key);
-    }
-  } catch (error) {
-    console.error(`Error reading from localStorage: ${error}`);
-  }
-  return null;
-};
-
-const setLocalStorage = (key: string, value: string): boolean => {
-  try {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(key, value);
-      return true;
-    }
-  } catch (error) {
-    console.error(`Error writing to localStorage: ${error}`);
-  }
-  return false;
-};
-
 export function useConversations() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversationId, setCurrentConversationId] = useState<
     string | null
   >(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [loadRetries, setLoadRetries] = useState(0);
 
-  // Load conversations from localStorage on mount
+  // Load conversations from localStorage on mount with retry mechanism
   useEffect(() => {
-    // Use a flag to ensure we only run this once in client-side rendering
     let isMounted = true;
 
-    // Delay slightly to ensure this runs after hydration
     const loadFromStorage = () => {
       if (!isMounted) return;
 
-      const savedConversations = getLocalStorage("conversations");
-      if (savedConversations) {
-        try {
-          const parsed = JSON.parse(savedConversations);
-          if (Array.isArray(parsed)) {
-            // Sort conversations by updatedAt timestamp (newest first)
-            const sortedConversations = parsed.sort(
-              (a, b) =>
-                new Date(b.updatedAt).getTime() -
-                new Date(a.updatedAt).getTime()
-            );
+      try {
+        // Use our enhanced storage utility
+        const savedConversations = getStorageJSON<Conversation[]>(
+          "conversations",
+          []
+        );
 
-            setConversations(sortedConversations);
+        if (savedConversations.length > 0) {
+          // Sort conversations by updatedAt timestamp (newest first)
+          const sortedConversations = savedConversations.sort(
+            (a, b) =>
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          );
 
-            // Set the most recent conversation as current if none is selected
-            if (sortedConversations.length > 0 && !currentConversationId) {
-              setCurrentConversationId(sortedConversations[0].id);
-            }
+          setConversations(sortedConversations);
+
+          // Set the most recent conversation as current if none is selected
+          if (sortedConversations.length > 0 && !currentConversationId) {
+            setCurrentConversationId(sortedConversations[0].id);
           }
-        } catch (error) {
-          console.error("Failed to parse conversations:", error);
-        }
-      }
 
-      if (isMounted) {
-        setIsInitialized(true);
+          // Successfully loaded data
+          if (isMounted) {
+            setIsInitialized(true);
+          }
+        } else {
+          // We got an empty array or invalid data, set initialized to true to create new conversation
+          if (isMounted) {
+            setIsInitialized(true);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to parse conversations:", error);
+
+        // Handle corrupted data by clearing it and retrying
+        if (isMounted && loadRetries < 2) {
+          setLoadRetries((prev) => prev + 1);
+          setTimeout(loadFromStorage, 200); // Retry after a short delay
+        } else {
+          // After retries, just initialize without data
+          if (isMounted) {
+            setIsInitialized(true);
+          }
+        }
       }
     };
 
     // Delay the localStorage access to ensure it happens after hydration
     if (typeof window !== "undefined") {
-      // Use setTimeout to ensure this runs after React hydration
-      setTimeout(loadFromStorage, 0);
+      // Use requestAnimationFrame for smoother performance and to ensure we're after hydration
+      window.requestAnimationFrame(() => {
+        // Additional timeout to ensure we're well after hydration
+        setTimeout(loadFromStorage, 100);
+      });
     }
 
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [currentConversationId, loadRetries]);
 
-  // Save conversations to localStorage whenever they change
+  // Save conversations to localStorage with debounce and retry
   useEffect(() => {
-    if (isInitialized && conversations.length > 0) {
-      setLocalStorage("conversations", JSON.stringify(conversations));
-    }
+    if (!isInitialized || conversations.length === 0) return;
+
+    // Debounce saves to avoid writing too frequently
+    const timeoutId = setTimeout(() => {
+      // Use our enhanced storage utility with compression for large datasets
+      setStorageJSON("conversations", conversations);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
   }, [conversations, isInitialized]);
 
   const createNewConversation = useCallback(() => {
@@ -112,12 +115,18 @@ export function useConversations() {
 
   const updateConversation = useCallback(
     (id: string, messages: UIMessage[]) => {
+      if (!id || !messages || !Array.isArray(messages)) {
+        console.error("Invalid data in updateConversation:", { id, messages });
+        return;
+      }
+
       setConversations((prev) =>
         prev.map((conv) => {
           if (conv.id === id) {
+            const messagesCopy = Array.isArray(messages) ? [...messages] : [];
             return {
               ...conv,
-              messages: [...messages], // Create a new array to ensure state update
+              messages: messagesCopy,
               updatedAt: new Date().toISOString(),
               title: messages[0]?.content || "New Conversation",
             };
@@ -152,5 +161,6 @@ export function useConversations() {
     updateConversation,
     deleteConversation,
     getCurrentConversation,
+    isInitialized,
   };
 }
