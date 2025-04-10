@@ -1,6 +1,6 @@
 import { useConversations } from "@/hooks/useConversations";
 import { Message, useChat } from "@ai-sdk/react";
-import { useEffect, useRef, useLayoutEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
 
 interface ChatProps {
@@ -31,24 +31,6 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
       onMessageChange(messages);
     }
   }, [conversationId, messages, updateConversation, onMessageChange]);
-
-  // Focus input when conversation changes - use both useEffect and useLayoutEffect for maximum reliability
-  useEffect(() => {
-    const focusTimeout = setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, 50); // Small delay to ensure DOM is ready
-
-    return () => clearTimeout(focusTimeout);
-  }, [conversationId]);
-
-  // Also use useLayoutEffect for more immediate focus
-  useLayoutEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [conversationId]);
 
   return (
     <>
@@ -123,7 +105,6 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
             placeholder="Type your message..."
             onChange={handleInputChange}
             disabled={isLoading}
-            autoFocus
           />
           <button
             type="submit"

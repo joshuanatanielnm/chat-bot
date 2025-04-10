@@ -42,16 +42,6 @@ export default function Home() {
     const newConversation = createNewConversation();
     setCurrentConversationId(newConversation.id);
     setIsSidebarOpen(false);
-
-    // Force focus by using a small timeout
-    setTimeout(() => {
-      const inputField = document.querySelector(
-        'input[type="text"], input:not([type])'
-      );
-      if (inputField) {
-        (inputField as HTMLInputElement).focus();
-      }
-    }, 100);
   }, [createNewConversation, setCurrentConversationId]);
 
   // Handle messages change
@@ -72,16 +62,6 @@ export default function Home() {
     (id: string) => {
       setCurrentConversationId(id);
       setIsSidebarOpen(false);
-
-      // Force focus by using a small timeout
-      setTimeout(() => {
-        const inputField = document.querySelector(
-          'input[type="text"], input:not([type])'
-        );
-        if (inputField) {
-          (inputField as HTMLInputElement).focus();
-        }
-      }, 100);
     },
     [setCurrentConversationId]
   );
