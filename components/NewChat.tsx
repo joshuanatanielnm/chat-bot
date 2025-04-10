@@ -90,7 +90,7 @@ export const NewChat = ({ onCreateConversation }: NewChatProps) => {
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             ref={inputRef}
-            className="flex-1 rounded-full border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] px-4 py-2 text-sm lg:text-base focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all"
+            className="flex-1 rounded-full border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] px-4 py-2 lg:text-base focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all"
             value={input}
             placeholder="Type your message..."
             onChange={handleInputChange}

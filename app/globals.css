@@ -72,6 +72,13 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
+/* Prevent zoom on input focus for mobile devices */
+input,
+textarea,
+select {
+  font-size: 16px; /* Minimum font size to prevent zoom on iOS */
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
