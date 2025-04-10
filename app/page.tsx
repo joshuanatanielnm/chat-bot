@@ -196,7 +196,13 @@ export default function Home() {
         >
           New Chat
         </button>
-        <div className="flex-1 overflow-y-auto space-y-2">
+        <div
+          className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar"
+          style={{
+            scrollbarColor: `var(--scrollbar-thumb) var(--scrollbar-track)`,
+            scrollbarWidth: "thin",
+          }}
+        >
           {conversations.map((conv) => (
             <div
               key={conv.id}
@@ -256,18 +262,20 @@ export default function Home() {
         </div>
 
         {/* Render the appropriate chat component based on current state */}
-        {currentConversationId ? (
-          <Chat
-            key={`chat-${currentConversationId}`}
-            conversationId={currentConversationId}
-            onMessageChange={handleMessagesChange}
-          />
-        ) : (
-          <NewChat
-            key={`new-chat-${Date.now()}`}
-            onCreateConversation={handleCreateConversation}
-          />
-        )}
+        <div className="flex-1 overflow-hidden">
+          {currentConversationId ? (
+            <Chat
+              key={`chat-${currentConversationId}`}
+              conversationId={currentConversationId}
+              onMessageChange={handleMessagesChange}
+            />
+          ) : (
+            <NewChat
+              key={`new-chat-${Date.now()}`}
+              onCreateConversation={handleCreateConversation}
+            />
+          )}
+        </div>
       </div>
     </div>
   );

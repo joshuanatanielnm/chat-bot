@@ -10,6 +10,9 @@ html[data-theme="light"] {
   --border: #e5e5e5;
   --card: #ffffff;
   --card-foreground: #171717;
+  --scrollbar-thumb: #d1d5db !important;
+  --scrollbar-thumb-hover: #9ca3af !important;
+  --scrollbar-track: #f3f4f6 !important;
 }
 
 html[data-theme="dark"] {
@@ -21,6 +24,9 @@ html[data-theme="dark"] {
   --border: #333333;
   --card: #171717;
   --card-foreground: #ededed;
+  --scrollbar-thumb: #4b5563 !important;
+  --scrollbar-thumb-hover: #6b7280 !important;
+  --scrollbar-track: #1f2937 !important;
 }
 
 html[data-theme="ghibli"] {
@@ -32,6 +38,9 @@ html[data-theme="ghibli"] {
   --border: #b0c4de;
   --card: #eaf4f4;
   --card-foreground: #2c3e50;
+  --scrollbar-thumb: #a0b4c5 !important;
+  --scrollbar-thumb-hover: #7d98ad !important;
+  --scrollbar-track: #dbe9ef !important;
 }
 
 /* Add transition for smooth theme switching */
@@ -63,6 +72,9 @@ input {
     --border: #333333;
     --card: #171717;
     --card-foreground: #ededed;
+    --scrollbar-thumb: #4b5563 !important;
+    --scrollbar-thumb-hover: #6b7280 !important;
+    --scrollbar-track: #1f2937 !important;
   }
 }
 
@@ -70,6 +82,93 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track) !important;
+  border-radius: 4px !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb) !important;
+  border-radius: 4px !important;
+  border: none !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover) !important;
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin !important;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track) !important;
+}
+
+/* Custom scrollbar class for targeted elements */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: var(--scrollbar-track) !important;
+  border-radius: 4px !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb) !important;
+  border-radius: 4px !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover) !important;
+}
+
+/* Make sure Firefox respects the custom scrollbar too */
+.custom-scrollbar {
+  scrollbar-width: thin !important;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track) !important;
+}
+
+/* Force theme color on webkit scrollbars for specific elements */
+div::-webkit-scrollbar-track,
+main::-webkit-scrollbar-track,
+aside::-webkit-scrollbar-track,
+section::-webkit-scrollbar-track,
+nav::-webkit-scrollbar-track,
+article::-webkit-scrollbar-track,
+.overflow-y-auto::-webkit-scrollbar-track,
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: var(--scrollbar-track) !important;
+}
+
+div::-webkit-scrollbar-thumb,
+main::-webkit-scrollbar-thumb,
+aside::-webkit-scrollbar-thumb,
+section::-webkit-scrollbar-thumb,
+nav::-webkit-scrollbar-thumb,
+article::-webkit-scrollbar-thumb,
+.overflow-y-auto::-webkit-scrollbar-thumb,
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb) !important;
+}
+
+div::-webkit-scrollbar-thumb:hover,
+main::-webkit-scrollbar-thumb:hover,
+aside::-webkit-scrollbar-thumb:hover,
+section::-webkit-scrollbar-thumb:hover,
+nav::-webkit-scrollbar-thumb:hover,
+article::-webkit-scrollbar-thumb:hover,
+.overflow-y-auto::-webkit-scrollbar-thumb:hover,
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover) !important;
 }
 
 /* Prevent zoom on input focus for mobile devices */
