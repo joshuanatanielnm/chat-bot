@@ -52,7 +52,7 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
 
   return (
     <>
-      <div className="flex-1 overflow-y-auto px-4 py-8 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 py-8 pb-24 space-y-4">
         {messages.length === 0 ? (
           <div className="flex justify-center items-center h-full">
             <div className="text-center space-y-4 max-w-md px-4">
@@ -114,7 +114,7 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
         )}
       </div>
 
-      <div className="border-t border-[var(--border)] p-4">
+      <div className="border-t border-[var(--border)] p-4 fixed-bottom-input">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             ref={inputRef}
