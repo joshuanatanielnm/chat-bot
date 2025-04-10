@@ -54,7 +54,7 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
     <>
       <div className="flex-1 overflow-y-auto px-4 py-8 pb-24 space-y-4">
         {messages.length === 0 ? (
-          <div className="flex justify-center items-center h-full bg-red-500">
+          <div className="flex justify-center items-center h-full bg-red-500 my-auto">
             <div className="text-center space-y-4 max-w-md px-4">
               <div className="text-4xl mb-4">👋</div>
               <h2 className="text-lg lg:text-xl font-semibold text-[var(--foreground)]">
