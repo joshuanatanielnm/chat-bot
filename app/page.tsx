@@ -42,16 +42,6 @@ export default function Home() {
     const newConversation = createNewConversation();
     setCurrentConversationId(newConversation.id);
     setIsSidebarOpen(false);
-
-    // Force focus by using a small timeout
-    setTimeout(() => {
-      const inputField = document.querySelector(
-        'input[type="text"], input:not([type])'
-      );
-      if (inputField) {
-        (inputField as HTMLInputElement).focus();
-      }
-    }, 100);
   }, [createNewConversation, setCurrentConversationId]);
 
   // Handle messages change
@@ -72,16 +62,6 @@ export default function Home() {
     (id: string) => {
       setCurrentConversationId(id);
       setIsSidebarOpen(false);
-
-      // Force focus by using a small timeout
-      setTimeout(() => {
-        const inputField = document.querySelector(
-          'input[type="text"], input:not([type])'
-        );
-        if (inputField) {
-          (inputField as HTMLInputElement).focus();
-        }
-      }, 100);
     },
     [setCurrentConversationId]
   );
@@ -163,7 +143,7 @@ export default function Home() {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col w-full lg:w-auto">
+      <div className="flex-1 flex flex-col w-full lg:w-auto h-screen">
         <div className="flex justify-between items-center py-4 px-4 border-b border-[var(--border)]">
           <h3 className="text-xl lg:text-2xl font-bold">
             Cognitica AI Chat Assistant

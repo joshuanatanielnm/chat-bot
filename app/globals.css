@@ -72,6 +72,13 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
+/* Prevent zoom on input focus for mobile devices */
+input,
+textarea,
+select {
+  font-size: 16px; /* Minimum font size to prevent zoom on iOS */
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -85,4 +92,36 @@ body {
 
 .animate-fade-in {
   animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Mobile viewport fix - especially for iOS Safari */
+html,
+body {
+  height: 100%;
+}
+
+/* Only apply these styles on the client side */
+@media screen {
+  html,
+  body {
+    position: relative;
+    overflow: hidden;
+  }
+
+  @supports (-webkit-touch-callout: none) {
+    /* iOS specific style for fixing viewport height issues with virtual keyboard */
+    .flex.h-screen {
+      height: -webkit-fill-available;
+    }
+
+    /* Fix for input being hidden under keyboard on iOS Safari */
+    .fixed-bottom-input {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 30;
+      background-color: var(--background);
+    }
+  }
 }

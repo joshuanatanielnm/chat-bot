@@ -1,7 +1,8 @@
 import { useConversations } from "@/hooks/useConversations";
 import { Message, useChat } from "@ai-sdk/react";
-import { useEffect, useRef, useLayoutEffect } from "react";
+import { useEffect, useRef } from "react";
 import { Loader2 } from "lucide-react";
+import { isMobileDevice } from "@/utils/deviceDetection";
 
 interface ChatProps {
   conversationId: string;
@@ -32,27 +33,9 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
     }
   }, [conversationId, messages, updateConversation, onMessageChange]);
 
-  // Focus input when conversation changes - use both useEffect and useLayoutEffect for maximum reliability
-  useEffect(() => {
-    const focusTimeout = setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
-    }, 50); // Small delay to ensure DOM is ready
-
-    return () => clearTimeout(focusTimeout);
-  }, [conversationId]);
-
-  // Also use useLayoutEffect for more immediate focus
-  useLayoutEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [conversationId]);
-
   return (
     <>
-      <div className="flex-1 overflow-y-auto px-4 py-8 space-y-4">
+      <div className="flex-1 overflow-y-auto px-4 py-8 pb-24 space-y-4 h-full">
         {messages.length === 0 ? (
           <div className="flex justify-center items-center h-full">
             <div className="text-center space-y-4 max-w-md px-4">
@@ -114,16 +97,16 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
         )}
       </div>
 
-      <div className="border-t border-[var(--border)] p-4">
+      <div className="border-t border-[var(--border)] p-4 fixed-bottom-input">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             ref={inputRef}
-            className="flex-1 rounded-full border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] px-4 py-2 text-sm lg:text-base focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all"
+            className="flex-1 rounded-full border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] px-4 py-2 lg:text-base focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all"
             value={input}
             placeholder="Type your message..."
             onChange={handleInputChange}
             disabled={isLoading}
-            autoFocus
+            autoFocus={!isMobileDevice()}
           />
           <button
             type="submit"
