@@ -2,6 +2,7 @@ import { useConversations } from "@/hooks/useConversations";
 import { useChat } from "@ai-sdk/react";
 import { useCallback, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
+import { isMobileDevice } from "@/utils/deviceDetection";
 
 interface NewChatProps {
   onCreateConversation: (id: string) => void;
@@ -71,6 +72,7 @@ export const NewChat = ({ onCreateConversation }: NewChatProps) => {
             placeholder="Type your message..."
             onChange={handleInputChange}
             disabled={loading}
+            autoFocus={!isMobileDevice()}
           />
           <button
             type="submit"
