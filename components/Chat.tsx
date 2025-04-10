@@ -1,6 +1,6 @@
 import { useConversations } from "@/hooks/useConversations";
 import { Message, useChat } from "@ai-sdk/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 import { Loader2 } from "lucide-react";
 import { isMobileDevice } from "@/utils/deviceDetection";
 
@@ -18,12 +18,57 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
   const conversation = conversations.find((conv) => conv.id === conversationId);
 
   // Initialize chat with the conversation's messages
-  const { messages, input, handleInputChange, handleSubmit, isLoading } =
-    useChat({
-      id: conversationId,
-      initialMessages: conversation?.messages || [],
-      api: "/api/chat",
-    });
+  const {
+    messages,
+    input,
+    handleInputChange,
+    handleSubmit: originalSubmit,
+    isLoading,
+  } = useChat({
+    id: conversationId,
+    initialMessages: conversation?.messages || [],
+    api: "/api/chat",
+  });
+
+  // Custom submit handler to refocus input after submission
+  const handleSubmit = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      originalSubmit(e);
+
+      // Immediately save the new user message
+      if (messages.length > 0) {
+        const userMessage = messages[messages.length - 1];
+        // Check if this is a new user message
+        if (userMessage && userMessage.role === "user") {
+          updateConversation(conversationId, messages);
+        }
+      }
+
+      // Use setTimeout to ensure this happens after the form submission is processed
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 0);
+    },
+    [originalSubmit, messages, updateConversation, conversationId]
+  );
+
+  // Keep track of previous loading state to detect when it changes
+  const prevLoadingRef = useRef(isLoading);
+
+  // Focus input after response is received
+  useEffect(() => {
+    // If loading just finished (was loading, now it's not)
+    if (prevLoadingRef.current && !isLoading) {
+      // Focus the input field
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }
+    // Update the ref with current loading state
+    prevLoadingRef.current = isLoading;
+  }, [isLoading]);
 
   // Update conversation in storage when messages change
   useEffect(() => {
@@ -32,6 +77,36 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
       onMessageChange(messages);
     }
   }, [conversationId, messages, updateConversation, onMessageChange]);
+
+  // Add auto-save on blur to prevent message loss
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (messages.length > 0) {
+        updateConversation(conversationId, messages);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      // Save on component unmount
+      if (messages.length > 0) {
+        updateConversation(conversationId, messages);
+      }
+    };
+  }, [messages, conversationId, updateConversation]);
+
+  // Focus input on component mount and when messages update
+  useEffect(() => {
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      if (inputRef.current && !isLoading) {
+        inputRef.current.focus();
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [isLoading, messages.length]);
 
   return (
     <>
