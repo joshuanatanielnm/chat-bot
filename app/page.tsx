@@ -12,7 +12,8 @@ import { Chat } from "@/components/Chat";
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const {
     conversations,
@@ -20,22 +21,24 @@ export default function Home() {
     setCurrentConversationId,
     createNewConversation,
     deleteConversation,
+    isInitialized,
   } = useConversations();
 
-  // Create a new conversation if there are none
+  // Create a new conversation if there are none when initialized
   useEffect(() => {
-    // Skip during server-side rendering
-    if (typeof window === "undefined") return;
+    // Wait for initialization to complete
+    if (!isInitialized) {
+      return;
+    }
 
-    // Use a timeout to ensure this runs after localStorage is loaded
-    const timer = setTimeout(() => {
-      if (conversations.length === 0) {
-        createNewConversation();
-      }
-    }, 100); // Small delay to ensure localStorage has been processed
+    // Hide loading state once initialized
+    setIsLoading(false);
 
-    return () => clearTimeout(timer);
-  }, [conversations.length, createNewConversation]);
+    // Create a new conversation if none exist after initialization
+    if (conversations.length === 0) {
+      createNewConversation();
+    }
+  }, [conversations.length, createNewConversation, isInitialized]);
 
   // Handle creating a new chat
   const handleNewChat = useCallback(() => {
@@ -76,6 +79,18 @@ export default function Home() {
       >
         {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
+
+      {/* Loading screen */}
+      {isLoading && (
+        <div className="fixed inset-0 bg-[var(--background)] flex items-center justify-center z-50">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--accent)] mb-4"></div>
+            <p className="text-[var(--foreground)]">
+              Loading your conversations...
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Sidebar */}
       <div
@@ -145,9 +160,16 @@ export default function Home() {
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col w-full lg:w-auto h-screen">
         <div className="flex justify-between items-center py-4 px-4 border-b border-[var(--border)]">
-          <h3 className="text-xl lg:text-2xl font-bold">
-            Cognitica AI Chat Assistant
-          </h3>
+          <div>
+            <h3 className="text-xl lg:text-2xl font-bold">
+              Cognitica AI Chat Assistant
+            </h3>
+            {currentConversationId && messages.length > 0 && (
+              <p className="text-xs text-gray-500 mt-1">
+                {messages.length} message{messages.length !== 1 ? "s" : ""}
+              </p>
+            )}
+          </div>
 
           {/* Desktop Theme Switcher */}
           <div className="hidden lg:block">
@@ -156,17 +178,21 @@ export default function Home() {
         </div>
 
         {/* Render the appropriate chat component based on current state */}
-        {currentConversationId ? (
-          <Chat
-            key={`chat-${currentConversationId}`}
-            conversationId={currentConversationId}
-            onMessageChange={handleMessagesChange}
-          />
-        ) : (
-          <NewChat
-            key={`new-chat-${Date.now()}`}
-            onCreateConversation={handleCreateConversation}
-          />
+        {!isLoading && (
+          <>
+            {currentConversationId ? (
+              <Chat
+                key={`chat-${currentConversationId}`}
+                conversationId={currentConversationId}
+                onMessageChange={handleMessagesChange}
+              />
+            ) : (
+              <NewChat
+                key={`new-chat-${Date.now()}`}
+                onCreateConversation={handleCreateConversation}
+              />
+            )}
+          </>
         )}
       </div>
     </div>

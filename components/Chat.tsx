@@ -1,6 +1,6 @@
 import { useConversations } from "@/hooks/useConversations";
 import { Message, useChat } from "@ai-sdk/react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Loader2 } from "lucide-react";
 import { isMobileDevice } from "@/utils/deviceDetection";
 
@@ -11,8 +11,10 @@ interface ChatProps {
 
 // Separate Chat that will be unmounted and remounted when conversation changes
 export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
-  const { conversations, updateConversation } = useConversations();
+  const { conversations, updateConversation, isInitialized } =
+    useConversations();
   const inputRef = useRef<HTMLInputElement>(null);
+  const [lastSavedMessages, setLastSavedMessages] = useState<Message[]>([]);
 
   // Find the current conversation
   const conversation = conversations.find((conv) => conv.id === conversationId);
@@ -27,11 +29,43 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
 
   // Update conversation in storage when messages change
   useEffect(() => {
-    if (messages.length > 0) {
-      updateConversation(conversationId, messages);
-      onMessageChange(messages);
+    // Only save if we have messages and they've actually changed
+    if (messages.length > 0 && isInitialized) {
+      // Check if the messages have actually changed before saving
+      const lastSavedStr = JSON.stringify(lastSavedMessages);
+      const currentMessagesStr = JSON.stringify(messages);
+
+      if (lastSavedStr !== currentMessagesStr) {
+        updateConversation(conversationId, messages);
+        onMessageChange(messages);
+        setLastSavedMessages(messages);
+      }
     }
-  }, [conversationId, messages, updateConversation, onMessageChange]);
+  }, [
+    conversationId,
+    messages,
+    updateConversation,
+    onMessageChange,
+    lastSavedMessages,
+    isInitialized,
+  ]);
+
+  // Ensure focus is on input when chat mounts
+  useEffect(() => {
+    // Only on client side
+    if (
+      typeof window !== "undefined" &&
+      !isMobileDevice() &&
+      inputRef.current
+    ) {
+      // Small delay to ensure DOM is ready
+      const timeoutId = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [conversationId]);
 
   return (
     <>
