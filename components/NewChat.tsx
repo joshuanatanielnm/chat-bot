@@ -1,6 +1,6 @@
 import { useConversations } from "@/hooks/useConversations";
 import { useChat } from "@ai-sdk/react";
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { isMobileDevice } from "@/utils/deviceDetection";
 
@@ -39,12 +39,47 @@ export const NewChat = ({ onCreateConversation }: NewChatProps) => {
         }
       }
       originalSubmit(e);
+
+      // Refocus the input field after submission
+      setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 0);
     },
     [input, createNewConversation, originalSubmit, onCreateConversation]
   );
 
   // Determine if loading
   const loading = isLoading || isSubmitting;
+
+  // Keep track of previous loading state to detect when it changes
+  const prevLoadingRef = useRef(loading);
+
+  // Focus input after response is received
+  useEffect(() => {
+    // If loading just finished (was loading, now it's not)
+    if (prevLoadingRef.current && !loading) {
+      // Focus the input field
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
+    }
+    // Update the ref with current loading state
+    prevLoadingRef.current = loading;
+  }, [loading]);
+
+  // Focus input on component mount
+  useEffect(() => {
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      if (inputRef.current && !loading) {
+        inputRef.current.focus();
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   return (
     <>
