@@ -104,27 +104,69 @@ export function useConversations() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    // Add new conversation to the beginning of the array so it appears at the top
-    setConversations((prev) => [newConversation, ...prev]);
+
+    // Add the new conversation and ensure the array is properly sorted
+    setConversations((prev) => {
+      const newArray = [...prev, newConversation];
+      // Sort by updatedAt to maintain order (newest first)
+      return newArray.sort(
+        (a, b) =>
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+      );
+    });
+
     setCurrentConversationId(newConversation.id);
     return newConversation;
   }, []);
 
   const updateConversation = useCallback(
     (id: string, messages: UIMessage[]) => {
-      setConversations((prev) =>
-        prev.map((conv) => {
+      setConversations((prev) => {
+        // Check if the conversation exists and needs updating
+        const existingConv = prev.find((conv) => conv.id === id);
+
+        // If it doesn't exist or messages are the same, return the current state
+        if (
+          !existingConv ||
+          (existingConv.messages.length === messages.length &&
+            JSON.stringify(existingConv.messages) === JSON.stringify(messages))
+        ) {
+          return prev;
+        }
+
+        // Generate a new timestamp only if we're actually updating
+        const newUpdatedAt = new Date().toISOString();
+
+        // First update the conversation with new messages
+        const updatedConversations = prev.map((conv) => {
           if (conv.id === id) {
             return {
               ...conv,
               messages: [...messages], // Create a new array to ensure state update
-              updatedAt: new Date().toISOString(),
+              updatedAt: newUpdatedAt,
               title: messages[0]?.content || "New Conversation",
             };
           }
           return conv;
-        })
-      );
+        });
+
+        // Only sort if the updated conversation's timestamp is newer than the first item
+        if (
+          prev.length <= 1 ||
+          id === prev[0].id ||
+          new Date(newUpdatedAt).getTime() >
+            new Date(prev[0].updatedAt).getTime()
+        ) {
+          // Then sort by updatedAt to maintain order (newest first)
+          return updatedConversations.sort(
+            (a, b) =>
+              new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+          );
+        }
+
+        // If it's just an update without changing order, return without sorting
+        return updatedConversations;
+      });
     },
     []
   );

@@ -34,6 +34,16 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       originalSubmit(e);
+
+      // Immediately save the new user message
+      if (messages.length > 0) {
+        const userMessage = messages[messages.length - 1];
+        // Check if this is a new user message
+        if (userMessage && userMessage.role === "user") {
+          updateConversation(conversationId, messages);
+        }
+      }
+
       // Use setTimeout to ensure this happens after the form submission is processed
       setTimeout(() => {
         if (inputRef.current) {
@@ -41,7 +51,7 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
         }
       }, 0);
     },
-    [originalSubmit]
+    [originalSubmit, messages, updateConversation, conversationId]
   );
 
   // Keep track of previous loading state to detect when it changes
@@ -67,6 +77,24 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
       onMessageChange(messages);
     }
   }, [conversationId, messages, updateConversation, onMessageChange]);
+
+  // Add auto-save on blur to prevent message loss
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (messages.length > 0) {
+        updateConversation(conversationId, messages);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      // Save on component unmount
+      if (messages.length > 0) {
+        updateConversation(conversationId, messages);
+      }
+    };
+  }, [messages, conversationId, updateConversation]);
 
   // Focus input on component mount and when messages update
   useEffect(() => {

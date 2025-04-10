@@ -10,11 +10,15 @@ interface NewChatProps {
 
 // Empty chat for new conversations
 export const NewChat = ({ onCreateConversation }: NewChatProps) => {
-  const { createNewConversation } = useConversations();
+  const { createNewConversation, updateConversation } = useConversations();
   const inputRef = useRef<HTMLInputElement>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [newConversationId, setNewConversationId] = useState<string | null>(
+    null
+  );
 
   const {
+    messages,
     input,
     handleInputChange,
     handleSubmit: originalSubmit,
@@ -25,6 +29,13 @@ export const NewChat = ({ onCreateConversation }: NewChatProps) => {
     api: "/api/chat",
   });
 
+  // Save messages whenever they change
+  useEffect(() => {
+    if (newConversationId && messages.length > 0) {
+      updateConversation(newConversationId, messages);
+    }
+  }, [newConversationId, messages, updateConversation]);
+
   const handleSubmit = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
@@ -32,6 +43,7 @@ export const NewChat = ({ onCreateConversation }: NewChatProps) => {
         setIsSubmitting(true);
         try {
           const newConversation = createNewConversation();
+          setNewConversationId(newConversation.id);
           onCreateConversation(newConversation.id);
         } catch (error) {
           console.error("Error creating new conversation:", error);

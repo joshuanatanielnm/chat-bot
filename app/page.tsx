@@ -2,6 +2,7 @@
 
 import { useConversations } from "@/hooks/useConversations";
 import { Message } from "@ai-sdk/react";
+import { UIMessage } from "ai";
 import { Menu, X } from "lucide-react";
 import { useCallback, useState, useEffect } from "react";
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
@@ -12,7 +13,7 @@ import { Chat } from "@/components/Chat";
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<UIMessage[]>([]);
 
   const {
     conversations,
@@ -20,6 +21,7 @@ export default function Home() {
     setCurrentConversationId,
     createNewConversation,
     deleteConversation,
+    updateConversation,
   } = useConversations();
 
   // Create a new conversation if there are none
@@ -39,31 +41,136 @@ export default function Home() {
 
   // Handle creating a new chat
   const handleNewChat = useCallback(() => {
+    // Save the current conversation before switching only if there are changes
+    if (currentConversationId && messages.length > 0) {
+      // Get the current conversation from the state to avoid unnecessary updates
+      const currentConv = conversations.find(
+        (conv) => conv.id === currentConversationId
+      );
+
+      // Only update if the messages have changed
+      if (
+        currentConv &&
+        JSON.stringify(currentConv.messages) !== JSON.stringify(messages)
+      ) {
+        updateConversation(currentConversationId, messages);
+      }
+    }
+
     const newConversation = createNewConversation();
     setCurrentConversationId(newConversation.id);
     setIsSidebarOpen(false);
-  }, [createNewConversation, setCurrentConversationId]);
+    setMessages([]); // Reset messages for new chat
+  }, [
+    createNewConversation,
+    setCurrentConversationId,
+    currentConversationId,
+    messages,
+    updateConversation,
+    conversations,
+  ]);
 
   // Handle messages change
-  const handleMessagesChange = useCallback((newMessages: Message[]) => {
-    setMessages(newMessages);
-  }, []);
+  const handleMessagesChange = useCallback(
+    (newMessages: Message[]) => {
+      // Convert Message to UIMessage as needed
+      const uiMessages = newMessages as unknown as UIMessage[];
+      setMessages(uiMessages);
+
+      // Also update the conversation in storage if we have messages and a selected conversation
+      if (currentConversationId && newMessages.length > 0) {
+        // Get the current conversation to compare messages
+        const currentConv = conversations.find(
+          (conv) => conv.id === currentConversationId
+        );
+
+        // Only update if we have new messages or different messages
+        if (
+          !currentConv ||
+          currentConv.messages.length !== newMessages.length ||
+          JSON.stringify(currentConv.messages) !== JSON.stringify(uiMessages)
+        ) {
+          updateConversation(currentConversationId, uiMessages);
+        }
+      }
+    },
+    [currentConversationId, updateConversation, conversations]
+  );
 
   // Handle creating a conversation from new chat
   const handleCreateConversation = useCallback(
     (id: string) => {
+      // Save current conversation before switching only if there are changes
+      if (currentConversationId && messages.length > 0) {
+        // Get the current conversation from the state to avoid unnecessary updates
+        const currentConv = conversations.find(
+          (conv) => conv.id === currentConversationId
+        );
+
+        // Only update if the messages have changed
+        if (
+          currentConv &&
+          JSON.stringify(currentConv.messages) !== JSON.stringify(messages)
+        ) {
+          updateConversation(currentConversationId, messages);
+        }
+      }
+
       setCurrentConversationId(id);
+      setMessages([]); // Reset messages for the new conversation
     },
-    [setCurrentConversationId]
+    [
+      setCurrentConversationId,
+      currentConversationId,
+      messages,
+      updateConversation,
+      conversations,
+    ]
   );
 
   // Handle selecting conversation
   const handleSelectConversation = useCallback(
     (id: string) => {
+      // Don't save/update if we're just selecting the same conversation
+      if (id === currentConversationId) {
+        setIsSidebarOpen(false);
+        return;
+      }
+
+      // Save current conversation before switching only if there are changes
+      if (currentConversationId && messages.length > 0) {
+        // Get the current conversation from the state to avoid unnecessary updates
+        const currentConv = conversations.find(
+          (conv) => conv.id === currentConversationId
+        );
+
+        // Only update if the messages have changed
+        if (
+          currentConv &&
+          JSON.stringify(currentConv.messages) !== JSON.stringify(messages)
+        ) {
+          updateConversation(currentConversationId, messages);
+        }
+      }
+
       setCurrentConversationId(id);
       setIsSidebarOpen(false);
+
+      // Find and load messages for the selected conversation
+      const selectedConversation = conversations.find((conv) => conv.id === id);
+      if (selectedConversation) {
+        setMessages(selectedConversation.messages || []);
+      } else {
+        setMessages([]);
+      }
     },
-    [setCurrentConversationId]
+    [
+      setCurrentConversationId,
+      conversations,
+      currentConversationId,
+      messages,
+      updateConversation,
+    ]
   );
 
   return (
@@ -90,46 +197,39 @@ export default function Home() {
           New Chat
         </button>
         <div className="flex-1 overflow-y-auto space-y-2">
-          {conversations
-            .slice() // Create a copy to avoid mutating the original array
-            .sort(
-              (a, b) =>
-                new Date(b.updatedAt).getTime() -
-                new Date(a.updatedAt).getTime()
-            ) // Sort by updatedAt descending (newest first)
-            .map((conv) => (
-              <div
-                key={conv.id}
-                className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                  currentConversationId === conv.id
-                    ? "bg-[var(--accent-hover)]"
-                    : "hover:bg-[var(--background-secondary)]"
-                }`}
-                onClick={() => {
-                  handleSelectConversation(conv.id);
-                }}
-              >
-                <div className="flex justify-between items-center">
-                  <span className="truncate text-sm">
-                    {conv.title || "New Conversation"}
-                  </span>
-                  {conversations.length > 1 && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteConversation(conv.id);
-                      }}
-                      className="text-gray-500 hover:text-red-500"
-                    >
-                      ×
-                    </button>
-                  )}
-                </div>
-                <div className="text-xs text-gray-500">
-                  {new Date(conv.updatedAt).toLocaleDateString()}
-                </div>
+          {conversations.map((conv) => (
+            <div
+              key={conv.id}
+              className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                currentConversationId === conv.id
+                  ? "bg-[var(--accent-hover)]"
+                  : "hover:bg-[var(--background-secondary)]"
+              }`}
+              onClick={() => {
+                handleSelectConversation(conv.id);
+              }}
+            >
+              <div className="flex justify-between items-center">
+                <span className="truncate text-sm">
+                  {conv.title || "New Conversation"}
+                </span>
+                {conversations.length > 1 && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteConversation(conv.id);
+                    }}
+                    className="text-gray-500 hover:text-red-500"
+                  >
+                    ×
+                  </button>
+                )}
               </div>
-            ))}
+              <div className="text-xs text-gray-500">
+                {new Date(conv.updatedAt).toLocaleDateString()}
+              </div>
+            </div>
+          ))}
         </div>
         <div className="block lg:hidden pb-4">
           <ThemeSwitcher />
