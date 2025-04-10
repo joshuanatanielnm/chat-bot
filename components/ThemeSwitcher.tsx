@@ -14,7 +14,7 @@ export function ThemeSwitcher() {
           theme === "light"
             ? "bg-[var(--accent)] text-white"
             : "hover:bg-[var(--accent-hover)]"
-        }`}
+        } cursor-pointer`}
         aria-label="Light mode"
       >
         <Sun size={18} className="mx-auto" />
@@ -25,7 +25,7 @@ export function ThemeSwitcher() {
           theme === "dark"
             ? "bg-[var(--accent)] text-white"
             : "hover:bg-[var(--accent-hover)]"
-        }`}
+        } cursor-pointer`}
         aria-label="Dark mode"
       >
         <Moon size={18} className="mx-auto" />
@@ -36,7 +36,7 @@ export function ThemeSwitcher() {
           theme === "ghibli"
             ? "bg-[var(--accent)] text-white"
             : "hover:bg-[var(--accent-hover)]"
-        }`}
+        } cursor-pointer`}
         aria-label="Ghibli mode"
       >
         <Palette size={18} className="mx-auto" />

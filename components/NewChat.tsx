@@ -95,7 +95,13 @@ export const NewChat = ({ onCreateConversation }: NewChatProps) => {
 
   return (
     <>
-      <div className="flex-1 overflow-y-auto px-4 py-8 pb-24 space-y-4">
+      <div
+        className="flex-1 overflow-y-auto px-4 py-8 pb-24 space-y-4 pr-1 custom-scrollbar"
+        style={{
+          scrollbarColor: `var(--scrollbar-thumb) var(--scrollbar-track)`,
+          scrollbarWidth: "thin",
+        }}
+      >
         <div className="flex justify-center items-center h-full">
           <div className="text-center space-y-4 max-w-md px-4">
             <div className="text-4xl mb-4">👋</div>
