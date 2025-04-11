@@ -178,27 +178,34 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
         )}
       </div>
 
-      <div className="border-t border-[var(--border)] p-4 fixed-bottom-input">
-        <form onSubmit={handleSubmit} className="flex gap-2">
-          <input
-            ref={inputRef}
-            className="flex-1 rounded-full border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] px-4 py-2 lg:text-base focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all"
-            value={input}
-            placeholder="Type your message..."
-            onChange={handleInputChange}
-            disabled={isLoading}
-            autoFocus={!isMobileDevice()}
-          />
-          <button
-            type="submit"
-            className={`rounded-full bg-[var(--accent)] text-white px-4 lg:px-6 py-2 text-sm lg:text-base hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2 transition-all ${
-              isLoading ? "opacity-70 cursor-not-allowed" : ""
-            }`}
-            disabled={isLoading || !input.trim()}
-          >
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send"}
-          </button>
-        </form>
+      {/* Wrap the input in a container div with relative positioning */}
+      <div className="relative w-full">
+        <div className="border-t border-[var(--border)] p-4 fixed-bottom-input">
+          <form onSubmit={handleSubmit} className="flex gap-2">
+            <input
+              ref={inputRef}
+              className="flex-1 rounded-full border border-[var(--border)] bg-[var(--card)] text-[var(--card-foreground)] px-4 py-2 lg:text-base focus:outline-none focus:ring-2 focus:ring-[var(--accent)] transition-all"
+              value={input}
+              placeholder="Type your message..."
+              onChange={handleInputChange}
+              disabled={isLoading}
+              autoFocus={!isMobileDevice()}
+            />
+            <button
+              type="submit"
+              className={`rounded-full bg-[var(--accent)] text-white px-4 lg:px-6 py-2 text-sm lg:text-base hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-[var(--accent)] focus:ring-offset-2 transition-all ${
+                isLoading ? "opacity-70 cursor-not-allowed" : ""
+              }`}
+              disabled={isLoading || !input.trim()}
+            >
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Send"
+              )}
+            </button>
+          </form>
+        </div>
       </div>
     </>
   );

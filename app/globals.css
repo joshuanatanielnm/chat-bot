@@ -221,6 +221,13 @@ body {
       right: 0;
       z-index: 30;
       background-color: var(--background);
+      /* Add transition for smoother positional changes */
+      transition: transform 0.2s ease-out;
+      /* Ensure it maintains position during DOM updates */
+      transform: translateZ(0);
+      will-change: transform;
+      /* Add shadow to visually separate from content */
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
     }
   }
 }
