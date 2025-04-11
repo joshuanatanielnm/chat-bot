@@ -174,11 +174,27 @@ export function useConversations() {
   const deleteConversation = useCallback(
     (id: string) => {
       setConversations((prev) => prev.filter((conv) => conv.id !== id));
+
+      // If we're deleting the current conversation
       if (currentConversationId === id) {
-        setCurrentConversationId(null);
+        // Use a small timeout to ensure the DOM updates properly
+        // This will prevent the input from jumping around
+        setTimeout(() => {
+          // Get the newest conversation after deletion
+          const remainingConversations = conversations.filter(
+            (conv) => conv.id !== id
+          );
+          if (remainingConversations.length > 0) {
+            // Select the most recent conversation
+            setCurrentConversationId(remainingConversations[0].id);
+          } else {
+            // If no conversations left, set to null
+            setCurrentConversationId(null);
+          }
+        }, 50);
       }
     },
-    [currentConversationId]
+    [currentConversationId, conversations]
   );
 
   const getCurrentConversation = useCallback(() => {

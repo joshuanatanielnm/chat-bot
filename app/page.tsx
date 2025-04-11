@@ -223,7 +223,23 @@ export default function Home() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
+                      // Add a small debounce to prevent rapid delete operations
+                      // This helps prevent input jumping issues
+                      const target = e.target as HTMLButtonElement;
+                      if (target.dataset.deleting === "true") {
+                        return;
+                      }
+                      target.dataset.deleting = "true";
+
+                      // Delete the conversation
                       deleteConversation(conv.id);
+
+                      // Reset the deleting flag after a short delay
+                      setTimeout(() => {
+                        if (target) {
+                          target.dataset.deleting = "false";
+                        }
+                      }, 300);
                     }}
                     className="text-gray-500 hover:text-red-500"
                   >
