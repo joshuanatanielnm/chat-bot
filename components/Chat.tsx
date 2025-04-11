@@ -3,6 +3,7 @@ import { Message, useChat } from "@ai-sdk/react";
 import { useEffect, useRef, useCallback } from "react";
 import { Loader2 } from "lucide-react";
 import { isMobileDevice } from "@/utils/deviceDetection";
+import { Markdown } from "./Markdown";
 
 interface ChatProps {
   conversationId: string;
@@ -111,7 +112,7 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
   return (
     <>
       <div
-        className="flex-1 overflow-y-auto px-4 py-8 pb-24 space-y-4 h-full pr-1 custom-scrollbar pt-24"
+        className="flex-1 overflow-y-auto px-2 py-8 pb-24 space-y-4 h-full pr-1 custom-scrollbar pt-24"
         style={{
           scrollbarColor: `var(--scrollbar-thumb) var(--scrollbar-track)`,
           scrollbarWidth: "thin",
@@ -140,7 +141,7 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
                 }`}
               >
                 <div
-                  className={`max-w-[90%] lg:max-w-[80%] rounded-2xl px-3 lg:px-4 py-2 ${
+                  className={`max-w-[75%] lg:max-w-[65%] rounded-2xl px-3 lg:px-4 py-2 ${
                     message.role === "user"
                       ? "bg-[var(--accent)] text-white rounded-br-none"
                       : "bg-[var(--card)] text-[var(--card-foreground)] rounded-bl-none"
@@ -152,9 +153,15 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
                         return (
                           <div
                             key={`${message.id}-${i}`}
-                            className="whitespace-pre-wrap break-words overflow-wrap-anywhere text-sm lg:text-base"
+                            className="break-words overflow-wrap-anywhere text-sm lg:text-base"
                           >
-                            {part.text}
+                            {message.role === "assistant" ? (
+                              <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-pre:my-2 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1">
+                                <Markdown>{part.text}</Markdown>
+                              </div>
+                            ) : (
+                              part.text
+                            )}
                           </div>
                         );
                     }
@@ -166,7 +173,7 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
             {/* Loading indicator */}
             {isLoading && (
               <div className="flex justify-start">
-                <div className="max-w-[90%] lg:max-w-[80%] rounded-2xl px-3 lg:px-4 py-2 bg-[var(--card)] text-[var(--card-foreground)] rounded-bl-none animate-fade-in">
+                <div className="max-w-[75%] lg:max-w-[65%] rounded-2xl px-3 lg:px-4 py-2 bg-[var(--card)] text-[var(--card-foreground)] rounded-bl-none animate-fade-in">
                   <div className="flex items-center space-x-2">
                     <Loader2 className="h-4 w-4 animate-spin text-gray-500" />
                     <span className="text-sm text-gray-500">Thinking...</span>
