@@ -156,7 +156,7 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
                             className="break-words overflow-wrap-anywhere text-sm lg:text-base"
                           >
                             {message.role === "assistant" ? (
-                              <div className="prose prose-sm dark:prose-invert max-w-none prose-p:my-1 prose-pre:my-2 prose-headings:my-2 prose-ul:my-1 prose-ol:my-1">
+                              <div className="prose prose-sm dark:prose-invert max-w-none markdown-wrapper">
                                 <Markdown>{part.text}</Markdown>
                               </div>
                             ) : (

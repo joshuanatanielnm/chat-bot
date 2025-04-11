@@ -17,19 +17,17 @@ export function CodeBlock({
 }: CodeBlockProps) {
   if (!inline) {
     return (
-      <div className="not-prose flex flex-col">
-        <pre
-          {...props}
-          className={`text-sm w-full overflow-x-auto bg-[var(--code-bg)] p-4 border border-[var(--border)] rounded-xl text-[var(--foreground)]`}
-        >
-          <code className="whitespace-pre-wrap break-words">{children}</code>
-        </pre>
-      </div>
+      <pre
+        {...props}
+        className={`text-sm w-full overflow-x-auto bg-[var(--code-bg)] p-4 border border-[var(--border)] rounded-xl text-[var(--foreground)] my-2 block`}
+      >
+        <code className="whitespace-pre-wrap break-words">{children}</code>
+      </pre>
     );
   } else {
     return (
       <code
-        className={`${className} text-sm bg-[var(--code-inline-bg)] py-0.5 px-1 rounded-md text-[var(--foreground)]`}
+        className={`${className} text-sm bg-[var(--code-inline-bg)] py-1 px-2 rounded-md text-[var(--foreground)]`}
         {...props}
       >
         {children}
