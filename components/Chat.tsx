@@ -112,7 +112,7 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
   return (
     <>
       <div
-        className="flex-1 overflow-y-auto px-2 py-4 space-y-4 min-h-0 h-[calc(100vh-8rem)] custom-scrollbar"
+        className="flex-1 overflow-y-auto px-2 py-4 space-y-4 min-h-0 h-[calc(100vh-8rem)] pb-32 custom-scrollbar"
         style={{
           scrollbarColor: `var(--scrollbar-thumb) var(--scrollbar-track)`,
           scrollbarWidth: "thin",
@@ -132,7 +132,7 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
             </div>
           </div>
         ) : (
-          <div className="pb-16">
+          <>
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -181,12 +181,12 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
                 </div>
               </div>
             )}
-          </div>
+          </>
         )}
       </div>
 
       {/* Wrap the input in a container div with relative positioning */}
-      <div className="sticky bottom-0 w-full bg-[var(--background)] border-t border-[var(--border)]">
+      <div className="fixed bottom-0 left-0 right-0 w-full bg-[var(--background)] border-t border-[var(--border)] z-30">
         <div className="p-4">
           <form onSubmit={handleSubmit} className="flex gap-2">
             <input

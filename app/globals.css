@@ -205,6 +205,9 @@ select {
 html,
 body {
   height: 100%;
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
 }
 
 /* Markdown styles for better spacing and display */
@@ -257,12 +260,6 @@ body {
 
 /* Only apply these styles on the client side */
 @media screen {
-  html,
-  body {
-    position: relative;
-    overflow: hidden;
-  }
-
   @supports (-webkit-touch-callout: none) {
     /* iOS specific style for fixing viewport height issues with virtual keyboard */
     .flex.h-screen {
@@ -284,6 +281,13 @@ body {
       will-change: transform;
       /* Add shadow to visually separate from content */
       box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      /* Prevent content from being hidden behind the input */
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    /* Ensure the main content area doesn't get hidden behind the input */
+    .overflow-y-auto {
+      padding-bottom: calc(5rem + env(safe-area-inset-bottom));
     }
   }
 }
