@@ -132,7 +132,7 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
             </div>
           </div>
         ) : (
-          <>
+          <div className="pb-6">
             {messages.map((message) => (
               <div
                 key={message.id}
@@ -181,7 +181,7 @@ export const Chat = ({ conversationId, onMessageChange }: ChatProps) => {
                 </div>
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
 
