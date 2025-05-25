@@ -1,298 +1,117 @@
-"use client";
+import Image from "next/image";
+import Link from "next/link";
 
-import { useConversations } from "@/hooks/useConversations";
-import { Message } from "@ai-sdk/react";
-import { UIMessage } from "ai";
-import { Menu, X } from "lucide-react";
-import { useCallback, useState, useEffect } from "react";
-import { ThemeSwitcher } from "@/components/ThemeSwitcher";
-import { NewChat } from "@/components/NewChat";
-import { Chat } from "@/components/Chat";
-
-// Define types for our components
-
-export default function Home() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [messages, setMessages] = useState<UIMessage[]>([]);
-
-  const {
-    conversations,
-    currentConversationId,
-    setCurrentConversationId,
-    createNewConversation,
-    deleteConversation,
-    updateConversation,
-  } = useConversations();
-
-  // Create a new conversation if there are none
-  useEffect(() => {
-    // Skip during server-side rendering
-    if (typeof window === "undefined") return;
-
-    // Use a timeout to ensure this runs after localStorage is loaded
-    const timer = setTimeout(() => {
-      if (conversations.length === 0) {
-        createNewConversation();
-      }
-    }, 100); // Small delay to ensure localStorage has been processed
-
-    return () => clearTimeout(timer);
-  }, [conversations.length, createNewConversation]);
-
-  // Handle creating a new chat
-  const handleNewChat = useCallback(() => {
-    // Save the current conversation before switching only if there are changes
-    if (currentConversationId && messages.length > 0) {
-      // Get the current conversation from the state to avoid unnecessary updates
-      const currentConv = conversations.find(
-        (conv) => conv.id === currentConversationId
-      );
-
-      // Only update if the messages have changed
-      if (
-        currentConv &&
-        JSON.stringify(currentConv.messages) !== JSON.stringify(messages)
-      ) {
-        updateConversation(currentConversationId, messages);
-      }
-    }
-
-    const newConversation = createNewConversation();
-    setCurrentConversationId(newConversation.id);
-    setIsSidebarOpen(false);
-    setMessages([]); // Reset messages for new chat
-  }, [
-    createNewConversation,
-    setCurrentConversationId,
-    currentConversationId,
-    messages,
-    updateConversation,
-    conversations,
-  ]);
-
-  // Handle messages change
-  const handleMessagesChange = useCallback(
-    (newMessages: Message[]) => {
-      // Convert Message to UIMessage as needed
-      const uiMessages = newMessages as unknown as UIMessage[];
-      setMessages(uiMessages);
-
-      // Also update the conversation in storage if we have messages and a selected conversation
-      if (currentConversationId && newMessages.length > 0) {
-        // Get the current conversation to compare messages
-        const currentConv = conversations.find(
-          (conv) => conv.id === currentConversationId
-        );
-
-        // Only update if we have new messages or different messages
-        if (
-          !currentConv ||
-          currentConv.messages.length !== newMessages.length ||
-          JSON.stringify(currentConv.messages) !== JSON.stringify(uiMessages)
-        ) {
-          updateConversation(currentConversationId, uiMessages);
-        }
-      }
-    },
-    [currentConversationId, updateConversation, conversations]
-  );
-
-  // Handle creating a conversation from new chat
-  const handleCreateConversation = useCallback(
-    (id: string) => {
-      // Save current conversation before switching only if there are changes
-      if (currentConversationId && messages.length > 0) {
-        // Get the current conversation from the state to avoid unnecessary updates
-        const currentConv = conversations.find(
-          (conv) => conv.id === currentConversationId
-        );
-
-        // Only update if the messages have changed
-        if (
-          currentConv &&
-          JSON.stringify(currentConv.messages) !== JSON.stringify(messages)
-        ) {
-          updateConversation(currentConversationId, messages);
-        }
-      }
-
-      setCurrentConversationId(id);
-      setMessages([]); // Reset messages for the new conversation
-    },
-    [
-      setCurrentConversationId,
-      currentConversationId,
-      messages,
-      updateConversation,
-      conversations,
-    ]
-  );
-
-  // Handle selecting conversation
-  const handleSelectConversation = useCallback(
-    (id: string) => {
-      // Don't save/update if we're just selecting the same conversation
-      if (id === currentConversationId) {
-        setIsSidebarOpen(false);
-        return;
-      }
-
-      // Save current conversation before switching only if there are changes
-      if (currentConversationId && messages.length > 0) {
-        // Get the current conversation from the state to avoid unnecessary updates
-        const currentConv = conversations.find(
-          (conv) => conv.id === currentConversationId
-        );
-
-        // Only update if the messages have changed
-        if (
-          currentConv &&
-          JSON.stringify(currentConv.messages) !== JSON.stringify(messages)
-        ) {
-          updateConversation(currentConversationId, messages);
-        }
-      }
-
-      setCurrentConversationId(id);
-      setIsSidebarOpen(false);
-
-      // Find and load messages for the selected conversation
-      const selectedConversation = conversations.find((conv) => conv.id === id);
-      if (selectedConversation) {
-        setMessages(selectedConversation.messages || []);
-      } else {
-        setMessages([]);
-      }
-    },
-    [
-      setCurrentConversationId,
-      conversations,
-      currentConversationId,
-      messages,
-      updateConversation,
-    ]
-  );
-
+export default function LandingPage() {
   return (
-    <div className="flex h-screen bg-[var(--background)]">
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        className="lg:hidden fixed bottom-20 right-6 z-50 p-3 rounded-full bg-[var(--accent)] text-white shadow-lg hover:opacity-90 transition-colors"
-        aria-label="Toggle menu"
-      >
-        {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
-
-      {/* Sidebar */}
-      <div
-        className={`fixed lg:static inset-y-0 left-0 transform ${
-          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 transition-transform duration-200 ease-in-out w-64 border-r border-[var(--border)] p-4 flex flex-col bg-[var(--background)] z-40`}
-      >
-        <button
-          onClick={handleNewChat}
-          className="w-full lg:block hidden mb-4 px-4 py-2 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 transition-colors"
-        >
-          New Chat
-        </button>
-        <div
-          className="flex-1 overflow-y-auto space-y-2 pr-1 custom-scrollbar"
-          style={{
-            scrollbarColor: `var(--scrollbar-thumb) var(--scrollbar-track)`,
-            scrollbarWidth: "thin",
-          }}
-        >
-          {conversations.map((conv) => (
-            <div
-              key={conv.id}
-              className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                currentConversationId === conv.id
-                  ? "bg-[var(--accent-hover)]"
-                  : "hover:bg-[var(--background-secondary)]"
-              }`}
-              onClick={() => {
-                handleSelectConversation(conv.id);
-              }}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white flex flex-col overflow-y-auto">
+      <header className="py-6 px-4 sm:px-6 lg:px-8 shadow-md bg-slate-900/50 backdrop-blur-md">
+        <div className="container mx-auto flex justify-between items-center">
+          <h1 className="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">
+            Cognitica AI
+          </h1>
+          <nav className="space-x-8">
+            <Link
+              href="#products"
+              className="hover:text-purple-300 transition-colors"
             >
-              <div className="flex justify-between items-center">
-                <span className="truncate text-sm">
-                  {conv.title || "New Conversation"}
-                </span>
-                {conversations.length > 1 && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      // Add a small debounce to prevent rapid delete operations
-                      // This helps prevent input jumping issues
-                      const target = e.target as HTMLButtonElement;
-                      if (target.dataset.deleting === "true") {
-                        return;
-                      }
-                      target.dataset.deleting = "true";
+              Products
+            </Link>
+            <Link
+              href="#contact"
+              className="hover:text-purple-300 transition-colors"
+            >
+              Contact
+            </Link>
+          </nav>
+        </div>
+      </header>
 
-                      // Delete the conversation
-                      deleteConversation(conv.id);
+      {/* Hero Section */}
+      <main className="flex-grow">
+        <section className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 text-center">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-6">
+            Building the Future with{" "}
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-500">
+              Intelligent Solutions
+            </span>
+          </h2>
+          <p className="text-lg sm:text-xl text-slate-300 max-w-2xl mx-auto mb-10">
+            Welcome to the showcase of Cognitica AI&apos;s cutting-edge
+            products. Explore innovations designed to revolutionize your
+            workflow and unlock new possibilities.
+          </p>
+          <div>
+            <Link
+              href="#products"
+              className="inline-block bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105 text-lg"
+            >
+              Explore Our Products
+            </Link>
+          </div>
+        </section>
 
-                      // Reset the deleting flag after a short delay
-                      setTimeout(() => {
-                        if (target) {
-                          target.dataset.deleting = "false";
-                        }
-                      }, 300);
-                    }}
-                    className="text-gray-500 hover:text-red-500"
-                  >
-                    ×
-                  </button>
-                )}
-              </div>
-              <div className="text-xs text-gray-500">
-                {new Date(conv.updatedAt).toLocaleDateString()}
+        {/* Products Section Placeholder */}
+        <section id="products" className="py-16 sm:py-20 bg-slate-800/30">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <h3 className="text-3xl sm:text-4xl font-bold text-center mb-12 tracking-tight">
+              Our AI-Powered Products
+            </h3>
+            <div className="mx-auto justify-around items-center">
+              {/* Product Card 1 (Placeholder) */}
+              <div className="bg-slate-700/50 p-6 rounded-xl shadow-xl hover:shadow-purple-500/30 transition-shadow duration-300 max-w-xl mx-auto">
+                <Image
+                  src="/products/chatbot.png"
+                  alt="AI Product One"
+                  width={1000}
+                  height={1000}
+                  className="rounded-lg"
+                />
+                <h4 className="text-xl font-semibold mb-2 mt-6">Chatbot</h4>
+                <p className="text-slate-300 text-sm mb-4">
+                  Our chatbot is a powerful tool that can help you answer
+                  questions and help you with your business.
+                </p>
+                <Link
+                  href="/chatbot"
+                  className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+                >
+                  Learn More &rarr;
+                </Link>
               </div>
             </div>
-          ))}
-        </div>
-        <div className="block lg:hidden pb-4">
-          <ThemeSwitcher />
-        </div>
-        <button
-          onClick={handleNewChat}
-          className="block lg:hidden w-full mb-4 px-4 py-2 bg-[var(--accent)] text-white rounded-lg hover:opacity-90 transition-colors"
-        >
-          New Chat
-        </button>
-      </div>
-
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col w-full lg:w-auto h-screen">
-        <div className="flex justify-between items-center py-4 px-4 border-b border-[var(--border)]">
-          <h3 className="text-xl lg:text-2xl font-bold">
-            Cognitica AI Chat Assistant
-          </h3>
-
-          {/* Desktop Theme Switcher */}
-          <div className="hidden lg:block">
-            <ThemeSwitcher />
           </div>
-        </div>
+        </section>
 
-        {/* Render the appropriate chat component based on current state */}
-        <div className="flex-1 overflow-hidden">
-          {currentConversationId ? (
-            <Chat
-              key={`chat-${currentConversationId}`}
-              conversationId={currentConversationId}
-              onMessageChange={handleMessagesChange}
-            />
-          ) : (
-            <NewChat
-              key={`new-chat-${Date.now()}`}
-              onCreateConversation={handleCreateConversation}
-            />
-          )}
+        <section id="contact" className="py-16 sm:py-20 bg-slate-800/30">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h3 className="text-3xl sm:text-4xl font-bold mb-6 tracking-tight">
+              Get in Touch
+            </h3>
+            <p className="text-lg text-slate-300 max-w-xl mx-auto mb-8">
+              Have questions or want to learn more about how Cognitica AI can
+              help your business? Reach out to us!
+            </p>
+            <a
+              href="mailto:joshuanmanuputty@gmail.com"
+              className="inline-block bg-pink-600 hover:bg-pink-700 text-white font-semibold py-3 px-8 rounded-lg shadow-lg transition-transform transform hover:scale-105 text-lg"
+            >
+              Contact Us
+            </a>
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className="py-8 bg-slate-900 text-center">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <p className="text-slate-400 text-sm">
+            &copy; {new Date().getFullYear()} Cognitica AI. All rights reserved.
+          </p>
+          <p className="text-slate-500 text-xs mt-1">
+            Innovating the Future, One Algorithm at a Time.
+          </p>
         </div>
-      </div>
+      </footer>
     </div>
   );
 }

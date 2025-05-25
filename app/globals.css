@@ -52,6 +52,7 @@ html[data-theme="ghibli"] {
 /* Add transition for smooth theme switching */
 html {
   transition: background-color 0.3s ease, color 0.3s ease;
+  scroll-behavior: smooth;
 }
 
 body,
@@ -257,12 +258,6 @@ body {
 
 /* Only apply these styles on the client side */
 @media screen {
-  html,
-  body {
-    position: relative;
-    overflow: hidden;
-  }
-
   @supports (-webkit-touch-callout: none) {
     /* iOS specific style for fixing viewport height issues with virtual keyboard */
     .flex.h-screen {
