@@ -56,7 +56,7 @@ export default function LandingPage() {
             <h3 className="text-3xl sm:text-4xl font-bold text-center mb-12 tracking-tight">
               Our AI-Powered Products
             </h3>
-            <div className="mx-auto justify-around items-center">
+            <div className="mx-auto justify-around items-center flex flex-row">
               {/* Product Card 1 (Placeholder) */}
               <div className="bg-slate-700/50 p-6 rounded-xl shadow-xl hover:shadow-purple-500/30 transition-shadow duration-300 max-w-xl mx-auto">
                 <Image
@@ -64,7 +64,7 @@ export default function LandingPage() {
                   alt="AI Product One"
                   width={1000}
                   height={1000}
-                  className="rounded-lg"
+                  className="rounded-lg max-h-72 overflow-hidden"
                 />
                 <h4 className="text-xl font-semibold mb-2 mt-6">Chatbot</h4>
                 <p className="text-slate-300 text-sm mb-4">
@@ -73,6 +73,27 @@ export default function LandingPage() {
                 </p>
                 <Link
                   href="/chatbot"
+                  className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+                >
+                  Learn More &rarr;
+                </Link>
+              </div>
+              {/* Product Card 2 (Placeholder) */}
+              <div className="bg-slate-700/50 p-6 rounded-xl shadow-xl hover:shadow-purple-500/30 transition-shadow duration-300 max-w-xl mx-auto">
+                <Image
+                  src="/products/agent.png"
+                  alt="Agent preview"
+                  width={1000}
+                  height={1000}
+                  className="rounded-lg max-h-72 overflow-hidden"
+                />
+                <h4 className="text-xl font-semibold mb-2 mt-6">Agent</h4>
+                <p className="text-slate-300 text-sm mb-4">
+                  Our agent is a powerful tool that can help you answer
+                  questions and help you with your business.
+                </p>
+                <Link
+                  href="/agent"
                   className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
                 >
                   Learn More &rarr;

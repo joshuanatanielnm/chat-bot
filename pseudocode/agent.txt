@@ -1,0 +1,18 @@
+Example flow to actually buy something
+- User input the command (ex: "order me keyboard at https://novelkeys.com/")
+- LLM need to be able to understand the command
+- LLM need to know what the steps to achive the command
+- IF (the command it's not clear)
+  - LLM Need to ask following question (what type of keyboard do you want?)
+  - User need to give an answer until LLM think the answer it's good enough
+
+- LLM need to know what do with the steps to achive the desired output (ex: open browser, open novelkeys site, go to keyboard page, get featured products, get products detail, filter the data, and give user options)
+- User choose
+- LLM add the keyboard to the cart
+- LLM ask user to signin or signup
+- LLM ask for user information detail (ex: bank detail, address)
+- LLM order the keyboard
+
+Example flow to order ticket
+- User input command (ex: "search me flight from Surabaya to Jakarta")
+- LLM need to understand the command
