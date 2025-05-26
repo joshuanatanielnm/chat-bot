@@ -96,7 +96,7 @@ export const NewChat = ({ onCreateConversation }: NewChatProps) => {
   return (
     <>
       <div
-        className="flex-1 overflow-y-auto px-4 py-8 pb-24 space-y-4 pr-1 custom-scrollbar"
+        className="flex-1 overflow-y-auto px-4 py-8 pb-32 space-y-4 pr-1 custom-scrollbar"
         style={{
           scrollbarColor: `var(--scrollbar-thumb) var(--scrollbar-track)`,
           scrollbarWidth: "thin",
@@ -117,8 +117,8 @@ export const NewChat = ({ onCreateConversation }: NewChatProps) => {
       </div>
 
       {/* Wrap the input in a container div with relative positioning */}
-      <div className="relative w-full">
-        <div className="border-t border-[var(--border)] p-4 fixed-bottom-input">
+      <div className="fixed bottom-0 left-0 right-0 w-full bg-[var(--background)] border-t border-[var(--border)] z-30">
+        <div className="p-4 fixed-bottom-input">
           <form onSubmit={handleSubmit} className="flex gap-2">
             <input
               ref={inputRef}
